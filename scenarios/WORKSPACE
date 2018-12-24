@@ -1,0 +1,47 @@
+local_repository(
+    name = "rules_multi_tsc",
+    path = "../rules",
+)
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "node_modules_archive",
+    url = "file:///Users/sc/code/try-tsc/app2/node_modules.zip",
+    build_file_content="""
+exports_files([
+    "node_modules/typescript/lib/tsc.js",
+    "node_modules/uglify-es/bin/uglifyjs",
+    "node_modules/rollup/bin/rollup"
+])
+
+filegroup(
+    name = "mvdom",
+    srcs = glob([
+        "node_modules/mvdom/**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "rollup_plugins",
+    srcs = glob([
+        "node_modules/rollup-plugin-commonjs/**/*",
+        "node_modules/rollup-plugin-node-resolve/**/*",
+        "node_modules/rollup-plugin-alias/**/*",
+    ]),
+    visibility = ["//visibility:public"],
+)
+"""
+)
+
+http_archive(
+    name = "node",
+    url = "https://nodejs.org/dist/v10.14.2/node-v10.14.2-darwin-x64.tar.gz",
+    strip_prefix = "node-v10.14.2-darwin-x64",
+    build_file_content="""
+exports_files([
+    "bin/node",
+])
+"""
+)
