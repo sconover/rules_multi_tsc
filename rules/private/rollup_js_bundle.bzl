@@ -126,7 +126,7 @@ export default {
         inputs = [node_modules_file]
 
     ctx.action(
-        command="echo $(pwd);NODE_PATH=%s %s %s -c %s" % (
+        command="NODE_PATH=%s %s %s -c %s" % (
             node_modules_path,
             node_executable.path,
             rollup_script.path,
@@ -155,9 +155,9 @@ rollup_js_bundle = rule(
 
       "root_tsc_dep": attr.label(mandatory=True),
 
-      "node_executable": attr.label(allow_files=True, default=Label("//:node_executable")),
-      "rollup_script": attr.label(allow_files=True, default=Label("//:rollup_script")),
-      "rollup_plugins": attr.label(default=Label("//:rollup_plugins")),
+      "node_executable": attr.label(allow_files=True, mandatory=True),
+      "rollup_script": attr.label(allow_files=True, mandatory=True),
+      "rollup_plugins": attr.label(mandatory=True),
 
       "bundle_type": attr.string(mandatory=True, values=["source_only", "vendor_only", "all"])
     }

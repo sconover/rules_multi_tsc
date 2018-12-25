@@ -1,7 +1,7 @@
 import {Triangle} from "polygon/triangle"
 import {Point3d} from "./point3d"
 
-class TriangularPrism {
+export class TriangularPrism {
   constructor(private sideLength: number, private height: number) {}
 
   coordinates(): Point3d[] {

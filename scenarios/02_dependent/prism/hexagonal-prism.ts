@@ -1,7 +1,7 @@
 import {Hexagon} from "polygon/hexagon"
 import {Point3d} from "./point3d"
 
-class HexagonalPrism {
+export class HexagonalPrism {
   constructor(private sideLength: number, private height: number) {}
 
   coordinates(): Point3d[] {
