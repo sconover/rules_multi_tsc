@@ -5,23 +5,27 @@ local_repository(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-http_archive(
-    name = "node_modules_archive",
-    url = "file:///Users/sc/code/try-tsc/app2/node_modules.zip",
+new_local_repository(
+    name="node_modules_archive",
+    path=".",
     build_file_content="""
 exports_files([
     "node_modules/typescript/lib/tsc.js",
+    "node_modules/rollup/bin/rollup",
     "node_modules/uglify-es/bin/uglifyjs",
-    "node_modules/rollup/bin/rollup"
 ])
 
 filegroup(
-    name = "mvdom",
+    name = "default_typings",
     srcs = glob([
-        "node_modules/mvdom/**/*",
+        "node_modules/@types/**",
     ]),
     visibility = ["//visibility:public"],
 )
+
+filegroup(name = "long", srcs = glob(["node_modules/long/**/*",]), visibility = ["//visibility:public"])
+filegroup(name = "bson", srcs = glob(["node_modules/bson/**/*",]), visibility = ["//visibility:public"])
+filegroup(name = "buffer", srcs = glob(["node_modules/buffer/**/*",]), visibility = ["//visibility:public"])
 
 filegroup(
     name = "rollup_plugins",
@@ -29,6 +33,7 @@ filegroup(
         "node_modules/rollup-plugin-commonjs/**/*",
         "node_modules/rollup-plugin-node-resolve/**/*",
         "node_modules/rollup-plugin-alias/**/*",
+        "node_modules/rollup-plugin-includepaths/**/*",
     ]),
     visibility = ["//visibility:public"],
 )

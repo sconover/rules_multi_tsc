@@ -38,6 +38,9 @@ def _impl(ctx):
 
     tsc_out_dir = None # TODO: handling for when this is never set (fail - must be comiling at least one thing)
 
+    if len(ctx.attr.srcs) == 0:
+        fail("tsc rule error: srcs must have at least one item.")
+
     tsc_outputs = []
     ts_declaration_outputs = []
     js_and_sourcemap_outputs = []
