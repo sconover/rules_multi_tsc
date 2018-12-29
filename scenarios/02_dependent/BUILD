@@ -9,7 +9,6 @@ rollup_js_bundle(
     name="hexagonal_prism_bundle",
     entrypoint_js_content="const x = require('prism/hexagonal-prism'); console.log(new x.HexagonalPrism(7, 20))",
     module_name="hexagonalPrism",
-    bundle_type="all",
     root_tsc_dep="//02_dependent/prism:tsc",
 
     node_executable="@node//:bin/node",
