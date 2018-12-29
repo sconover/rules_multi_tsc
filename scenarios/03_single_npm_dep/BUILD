@@ -1,13 +1,14 @@
-load("@rules_multi_tsc//:def.bzl", "rollup_js_bundle2")
 load("@rules_multi_tsc//:def.bzl", "rollup_js_source_bundle")
+load("@rules_multi_tsc//:def.bzl", "rollup_js_vendor_bundle")
 
-rollup_js_bundle2(
-    name="bundle",
-    module_name="lgen",
-    entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen())",
-    tsc_dep="//03_single_npm_dep/long-gen:tsc",
-    node_deps=[
-      "@node_modules_archive//:long",
+rollup_js_vendor_bundle(
+    name="vendor_bundle",
+    module_name="lgen_vendor",
+    exports={
+      "long": "_long"
+    },
+    deps=[
+      "@node_modules_archive//:long"
     ],
 
     node_executable="@node//:bin/node",
@@ -21,7 +22,7 @@ rollup_js_source_bundle(
     entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen())",
     tsc_dep="//03_single_npm_dep/long-gen:tsc",
     globals={
-      "long": "vendor._long"
+      "long": "lgen_vendor._long"
     },
 
     node_executable="@node//:bin/node",
