@@ -1,7 +1,6 @@
 package(default_visibility = ["//:__subpackages__"])
 
 load("@rules_multi_tsc//:def.bzl", "tsc")
-load("@rules_multi_tsc//:def.bzl", "rollup_js_bundle")
 
 tsc(
     name="tsc",

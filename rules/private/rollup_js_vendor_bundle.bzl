@@ -1,5 +1,3 @@
-load(":tsc.bzl", "CumulativeJsResult")
-
 def _impl(ctx):
     node_executable = ctx.attr.node_executable.files.to_list()[0]
     rollup_script = ctx.attr.rollup_script.files.to_list()[0]
@@ -78,7 +76,7 @@ export default {
         content=rollup_config_content)
 
     ctx.action(
-        command="echo $(pwd);ln -s %s node_modules;NODE_PATH=./node_modules %s %s -c %s" % (
+        command="ln -s %s node_modules;%s %s -c %s" % (
             node_modules_path,
             node_executable.path,
             rollup_script.path,
