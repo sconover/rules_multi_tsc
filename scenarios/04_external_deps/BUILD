@@ -24,7 +24,7 @@ rollup_js_source_bundle(
     name="source_bundle",
     module_name="source",
     entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen())",
-    tsc_dep="//XX_external_dep/print-timestamp:tsc",
+    tsc_dep="//04_external_deps/print-timestamp:tsc",
     globals={
       "long": "vendor._long",
       "bson": "vendor._bson"

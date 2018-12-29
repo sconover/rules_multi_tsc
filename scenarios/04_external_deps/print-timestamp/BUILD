@@ -11,7 +11,7 @@ tsc(
       "@node_modules_archive//:bson",
       "@node_modules_archive//:buffer",
       "@node_modules_archive//:long",
-      "//XX_external_dep/long-gen:tsc",
+      "//04_external_deps/long-gen:tsc",
     ],
 
     node_executable="@node//:bin/node",
