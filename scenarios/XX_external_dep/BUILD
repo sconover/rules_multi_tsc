@@ -1,47 +1,35 @@
 package(default_visibility = ["//:__subpackages__"])
 
-load("@rules_multi_tsc//:def.bzl", "rollup_js_bundle")
+load("@rules_multi_tsc//:def.bzl", "rollup_js_source_bundle")
+load("@rules_multi_tsc//:def.bzl", "rollup_js_vendor_bundle")
 
-# Note that because we only make use of hexagonal prism at the entrypoint,
-# no triangle-related code is included in the bundle.
-
-rollup_js_bundle(
-    name="bundle_all",
-    entrypoint_js_content="const x = require('ptstamp/print-timestamp'); x.printTimestamp()",
-    module_name="ptstampAll",
-    root_tsc_dep="//03_external_dep/print-timestamp:tsc",
-    node_executable="@node//:bin/node",
-    rollup_script="@node_modules_archive//:node_modules/rollup/bin/rollup",
-    rollup_plugins="@node_modules_archive//:rollup_plugins",
-)
-
-vendorized_libraries = {
-  "long": "_long",
-  "buffer": "_buffer",
-  "bson": "_bson",
-}
-
-rollup_js_bundle(
-    name="bundle_vendor",
-    module_name="ptstampVendor",
-    provides_node_libraries=vendorized_libraries,
+rollup_js_vendor_bundle(
+    name="vendor_bundle",
+    module_name="vendor",
+    exports={
+      "long": "_long",
+      "bson": "_bson"
+    },
     deps=[
       "@node_modules_archive//:long",
       "@node_modules_archive//:bson",
-      "@node_modules_archive//:buffer",
     ],
+
     node_executable="@node//:bin/node",
     rollup_script="@node_modules_archive//:node_modules/rollup/bin/rollup",
     rollup_plugins="@node_modules_archive//:rollup_plugins",
 )
 
-rollup_js_bundle(
-    name="bundle_source",
-    module_name="ptstampSource",
-    entrypoint_js_content="const x = require('ptstamp/print-timestamp'); x.printTimestamp()",
-    uses_node_libraries=vendorized_libraries,
-    library_provider_module_name="ptstampVendor",
-    root_tsc_dep="//03_external_dep/print-timestamp:tsc",
+rollup_js_source_bundle(
+    name="source_bundle",
+    module_name="source",
+    entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen())",
+    tsc_dep="//XX_external_dep/print-timestamp:tsc",
+    globals={
+      "long": "vendor._long",
+      "bson": "vendor._bson"
+    },
+
     node_executable="@node//:bin/node",
     rollup_script="@node_modules_archive//:node_modules/rollup/bin/rollup",
     rollup_plugins="@node_modules_archive//:rollup_plugins",
