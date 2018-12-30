@@ -8,7 +8,6 @@ tsc(
     srcs=glob(["*.ts"]),
     deps=[
       "@node_modules_archive//:default_typings",
-      "@node_modules_archive//:long",
     ],
 
     node_executable="@node//:bin/node",

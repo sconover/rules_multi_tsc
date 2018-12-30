@@ -8,9 +8,6 @@ tsc(
     srcs=glob(["*.ts"]),
     deps=[
       "@node_modules_archive//:default_typings",
-      "@node_modules_archive//:bson",
-      "@node_modules_archive//:buffer",
-      "@node_modules_archive//:long",
       "//04_external_deps/long-gen:tsc",
     ],
 
