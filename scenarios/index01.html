@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <script type="text/javascript" src="bazel-bin/01_single/square.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const s = new Square(7).sides()
+      const d = document.createElement("div")
+      d.innerHTML = `Square sides: s1=${s[0]} s2=${s[1]} s3=${s[2]} s4=${s[3]}`
+      document.body.appendChild(d)
+    </script>
+  </body>
+</html>

@@ -45,7 +45,8 @@ export default {
     format: 'iife',
     sourcemap: true,
     sourcemapFile: '%s',
-    name: '%s'
+    name: '%s',
+    intro: 'const global = window'
   },
   plugins: [
     resolve({

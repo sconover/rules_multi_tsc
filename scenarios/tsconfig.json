@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
       "target": "es2015",
-      "module": "es2015",
+      "module": "commonjs",
       "moduleResolution": "node",
       "sourceMap": true,
       "emitDecoratorMetadata": true,
@@ -11,6 +11,7 @@
       "suppressImplicitAnyIndexErrors": true,
       "outDir": "../whatever",
       "baseUrl": ".",
-      "skipDefaultLibCheck": true
+      "skipDefaultLibCheck": true,
+      "allowSyntheticDefaultImports": true
   }
 }

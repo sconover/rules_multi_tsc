@@ -23,7 +23,7 @@ rollup_js_vendor_bundle(
 rollup_js_source_bundle(
     name="source_bundle",
     module_name="source",
-    entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen())",
+    entrypoint_js_content="const x = require('lgen/long-gen'); console.log(x.longGen()); const y = require('ptstamp/print-timestamp'); y.printTimestamp()",
     tsc_dep="//04_external_deps/print-timestamp:tsc",
     globals={
       "long": "vendor._long",
