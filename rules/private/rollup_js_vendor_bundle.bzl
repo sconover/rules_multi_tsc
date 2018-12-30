@@ -1,3 +1,5 @@
+load(":rollup_js_result.bzl", "RollupJsResult")
+
 def _impl(ctx):
     node_executable = ctx.attr.node_executable.files.to_list()[0]
     rollup_script = ctx.attr.rollup_script.files.to_list()[0]
@@ -94,7 +96,10 @@ export default {
         ] + ctx.attr.rollup_plugins.files.to_list() + dep_files
     )
 
-    return [DefaultInfo(files=depset([dest_file]))]
+    return [
+        DefaultInfo(files=depset([dest_file, sourcemap_file])),
+        RollupJsResult(js_file=dest_file, sourcemap_file=sourcemap_file),
+    ]
 
 rollup_js_vendor_bundle = rule(
     implementation = _impl,
