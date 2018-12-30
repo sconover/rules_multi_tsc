@@ -10,7 +10,7 @@ GenerateTsconfigInput = provider(
 
 TscResult = provider(
     fields = [
-        "import_path",
+        "ts_path",
         "tsc_out_dir",
         "ts_declaration_files",
     ]
@@ -18,7 +18,7 @@ TscResult = provider(
 
 CumulativeJsResult = provider(
     fields = [
-        "import_path_to_js_dir",
+        "ts_path_to_js_dir",
         "node_modules",
         "js_and_sourcemap_files",
     ]
@@ -32,9 +32,9 @@ def _impl(ctx):
     tsconfig_json = ctx.attr.tsconfig_json.files.to_list()[0]
     node_executable = ctx.attr.node_executable.files.to_list()[0]
 
-    import_path = ctx.attr.import_path
-    if len(import_path) == 0:
-        import_path = ctx.label.package.split("/")[-1]
+    ts_path = ctx.attr.ts_path
+    if len(ts_path) == 0:
+        ts_path = ctx.label.package.split("/")[-1]
 
     tsc_out_dir = None # TODO: handling for when this is never set (fail - must be comiling at least one thing)
 
@@ -69,7 +69,7 @@ def _impl(ctx):
         tsc_outputs.append(sourcemap_out_file)
 
     cumulative_js_result = CumulativeJsResult(
-        import_path_to_js_dir = {},
+        ts_path_to_js_dir = {},
         node_modules = {},
         js_and_sourcemap_files = []
     )
@@ -87,16 +87,16 @@ def _impl(ctx):
         if TscResult in dep:
             r = dep[TscResult]
             # TODO: throw error if path exists
-            paths_mapping[r.import_path + "/*"] = [r.tsc_out_dir + "/*"]
+            paths_mapping[r.ts_path + "/*"] = [r.tsc_out_dir + "/*"]
             dependency_ts_declaration_files.extend(r.ts_declaration_files.to_list())
 
         if CumulativeJsResult in dep:
             r = dep[CumulativeJsResult]
 
-            if r.import_path_to_js_dir != None:
-                for p in r.import_path_to_js_dir:
+            if r.ts_path_to_js_dir != None:
+                for p in r.ts_path_to_js_dir:
                     # TODO: fail if import path is duplicate
-                    cumulative_js_result.import_path_to_js_dir[p] = r.import_path_to_js_dir[p]
+                    cumulative_js_result.ts_path_to_js_dir[p] = r.ts_path_to_js_dir[p]
 
             if r.node_modules != None:
                 cumulative_js_result.node_modules.update(r.node_modules)
@@ -127,7 +127,7 @@ def _impl(ctx):
         ),
         inputs=ts_inputs,
         outputs = [generated_tsconfig_json_file],
-        progress_message = "generating tsconfig for '%s'..." % import_path,
+        progress_message = "generating tsconfig for '%s'..." % ts_path,
         tools = [
             node_executable,
             generate_tsconfig_json_js_script,
@@ -156,7 +156,7 @@ def _impl(ctx):
         ]),
         inputs=[generated_tsconfig_json_file] + ts_inputs,
         outputs = tsc_outputs,
-        progress_message = "running tsc for '%s'..." % import_path,
+        progress_message = "running tsc for '%s'..." % ts_path,
         tools = [
             node_executable,
             tsc_script,
@@ -170,17 +170,17 @@ def _impl(ctx):
     ctx.actions.write(
         output=additional_file,
         content="\n".join([
-            import_path,
+            ts_path,
             tsc_out_dir,
             node_executable.path,
             tsc_script.path,
         ]))
 
-    import_path_to_js_dir = cumulative_js_result.import_path_to_js_dir
+    ts_path_to_js_dir = cumulative_js_result.ts_path_to_js_dir
 
-    if import_path_to_js_dir == None:
-        import_path_to_js_dir = {}
-    import_path_to_js_dir[import_path] = tsc_out_dir # TODO: fail if key exists
+    if ts_path_to_js_dir == None:
+        ts_path_to_js_dir = {}
+    ts_path_to_js_dir[ts_path] = tsc_out_dir # TODO: fail if key exists
 
     new_mode_module_set = cumulative_js_result.node_modules
     new_mode_module_set.update(node_modules)
@@ -194,12 +194,12 @@ def _impl(ctx):
             ),
         ),
         TscResult(
-            import_path=import_path,
+            ts_path=ts_path,
             tsc_out_dir=tsc_out_dir,
             ts_declaration_files=depset(ts_declaration_outputs), # note: dependency .d.ts's not propagated
         ),
         CumulativeJsResult(
-            import_path_to_js_dir=import_path_to_js_dir,
+            ts_path_to_js_dir=ts_path_to_js_dir,
             node_modules=new_mode_module_set,
             js_and_sourcemap_files=cumulative_js_result.js_and_sourcemap_files + js_and_sourcemap_outputs,
         )
@@ -209,7 +209,7 @@ tsc = rule(
     implementation = _impl,
 
     attrs = {
-      "import_path": attr.string(),
+      "ts_path": attr.string(),
       "srcs": attr.label_list(allow_files=True, mandatory=True),
       "deps": attr.label_list(default=[]),
 

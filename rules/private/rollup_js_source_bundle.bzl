@@ -19,13 +19,13 @@ def _impl(ctx):
 
     cumulative_js_result = tsc_dep[CumulativeJsResult]
     inputs = cumulative_js_result.js_and_sourcemap_files
-    import_path_to_js_dir = cumulative_js_result.import_path_to_js_dir
-    if import_path_to_js_dir == None:
-        import_path_to_js_dir = {}
+    ts_path_to_js_dir = cumulative_js_result.ts_path_to_js_dir
+    if ts_path_to_js_dir == None:
+        ts_path_to_js_dir = {}
 
     alias_entries = []
-    for import_path in import_path_to_js_dir:
-        alias_entries.append("'%s' : path.resolve(process.cwd(), './%s')" % (import_path, import_path_to_js_dir[import_path]))
+    for ts_path in ts_path_to_js_dir:
+        alias_entries.append("'%s' : path.resolve(process.cwd(), './%s')" % (ts_path, ts_path_to_js_dir[ts_path]))
     alias_str = "{\n" + ",\n".join(alias_entries) + "}\n"
 
     dest_file = ctx.actions.declare_file(module_name + ".js")
