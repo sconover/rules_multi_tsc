@@ -19,7 +19,6 @@ TscResult = provider(
 CumulativeJsResult = provider(
     fields = [
         "ts_path_to_js_dir",
-        "node_modules",
         "js_and_sourcemap_files",
     ]
 )
@@ -36,7 +35,7 @@ def _impl(ctx):
     if len(ts_path) == 0:
         ts_path = ctx.label.package.split("/")[-1]
 
-    tsc_out_dir = None # TODO: handling for when this is never set (fail - must be comiling at least one thing)
+    tsc_out_dir = None
 
     if len(ctx.attr.srcs) == 0:
         fail("tsc rule error: srcs must have at least one item.")
@@ -68,25 +67,25 @@ def _impl(ctx):
         tsc_outputs.append(js_out_file)
         tsc_outputs.append(sourcemap_out_file)
 
+    if tsc_out_dir == None:
+        fail("tsc rule error: must be compile at least one file")
+
     cumulative_js_result = CumulativeJsResult(
         ts_path_to_js_dir = {},
-        node_modules = {},
         js_and_sourcemap_files = []
     )
     deps_files = []
     paths_mapping = {}
     dependency_ts_declaration_files = []
-    node_modules = {}
     for dep in ctx.attr.deps:
         for f in dep.files.to_list():
             deps_files.append(f)
-            if f.basename == "package.json" and "node_modules" in f.path.split("/"):
-                node_module_name = f.dirname.split("/")[-1]
-                node_modules[node_module_name] = f.dirname
 
         if TscResult in dep:
             r = dep[TscResult]
-            # TODO: throw error if path exists
+            next_ts_path = r.ts_path + "/*"
+            if next_ts_path in paths_mapping:
+                fail("tsc rule error: ts_path '%s' apparently defined twice" % r.ts_path)
             paths_mapping[r.ts_path + "/*"] = [r.tsc_out_dir + "/*"]
             dependency_ts_declaration_files.extend(r.ts_declaration_files.to_list())
 
@@ -95,11 +94,7 @@ def _impl(ctx):
 
             if r.ts_path_to_js_dir != None:
                 for p in r.ts_path_to_js_dir:
-                    # TODO: fail if import path is duplicate
                     cumulative_js_result.ts_path_to_js_dir[p] = r.ts_path_to_js_dir[p]
-
-            if r.node_modules != None:
-                cumulative_js_result.node_modules.update(r.node_modules)
 
             cumulative_js_result.js_and_sourcemap_files.extend(r.js_and_sourcemap_files)
 
@@ -119,7 +114,7 @@ def _impl(ctx):
     ts_inputs = src_files + dependency_ts_declaration_files
 
     ctx.action(
-        command="%s %s %s $(pwd) > %s" % ( # TODO: replace subshell pwd
+        command="%s %s %s > %s" % (
             node_executable.path,
             generate_tsconfig_json_js_script.path,
             script_input_data_file.path,
@@ -149,7 +144,7 @@ def _impl(ctx):
         command=" && ".join([
             "cp %s tsconfig.for-use.json" % generated_tsconfig_json_file.path,
             "ln -sf %s node_modules" % node_modules_path,
-            "%s %s -p tsconfig.for-use.json" % ( #TODO: flag to enable trace resolution...or rather, optional rule param for flags
+            "%s %s -p tsconfig.for-use.json" % (
                 node_executable.path,
                 tsc_script.path
             ),
@@ -177,13 +172,9 @@ def _impl(ctx):
         ]))
 
     ts_path_to_js_dir = cumulative_js_result.ts_path_to_js_dir
-
-    if ts_path_to_js_dir == None:
-        ts_path_to_js_dir = {}
-    ts_path_to_js_dir[ts_path] = tsc_out_dir # TODO: fail if key exists
-
-    new_mode_module_set = cumulative_js_result.node_modules
-    new_mode_module_set.update(node_modules)
+    if ts_path in ts_path_to_js_dir:
+        fail("tsc rule error: ts_path '%s' apparently defined twice" % r.ts_path)
+    ts_path_to_js_dir[ts_path] = tsc_out_dir
 
     return [
         DefaultInfo(
@@ -200,7 +191,6 @@ def _impl(ctx):
         ),
         CumulativeJsResult(
             ts_path_to_js_dir=ts_path_to_js_dir,
-            node_modules=new_mode_module_set,
             js_and_sourcemap_files=cumulative_js_result.js_and_sourcemap_files + js_and_sourcemap_outputs,
         )
     ]

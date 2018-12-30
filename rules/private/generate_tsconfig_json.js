@@ -2,10 +2,9 @@ const assert = require("assert")
 const fs = require("fs")
 const path = require('path')
 
-assert(process.argv.length==4 && fs.existsSync(process.argv[2]), `input to tsconfig generator not found. argv: ${process.argv}`)
+assert(process.argv.length==3 && fs.existsSync(process.argv[2]), `input to tsconfig generator not found. argv: ${process.argv}`)
 
 const inputFile = process.argv[2]
-const pwd = process.argv[3]
 
 const inputJson = JSON.parse(fs.readFileSync(inputFile, "utf8"))
 
