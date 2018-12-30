@@ -4,7 +4,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="ptstamp",
+    ts_path="ptstamp",
     srcs=glob(["*.ts"]),
     deps=[
       "@node_modules_archive//:default_typings",

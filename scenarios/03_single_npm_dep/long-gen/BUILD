@@ -4,7 +4,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="lgen",
+    ts_path="lgen",
     srcs=glob(["*.ts"]),
     deps=[
       "@node_modules_archive//:default_typings",

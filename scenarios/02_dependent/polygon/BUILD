@@ -4,7 +4,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="polygon",
+    ts_path="polygon",
     srcs=glob(["*.ts"]),
     deps=["//02_dependent/basics:tsc"],
 

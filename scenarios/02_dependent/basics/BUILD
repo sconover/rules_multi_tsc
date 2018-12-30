@@ -4,7 +4,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="basics",
+    ts_path="basics",
     srcs=glob(["*.ts"]),
 
     node_executable="@node//:bin/node",

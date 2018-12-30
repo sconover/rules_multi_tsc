@@ -4,7 +4,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="shape",
+    ts_path="shape",
     srcs=["square.ts"],
 
     node_executable="@node//:bin/node",

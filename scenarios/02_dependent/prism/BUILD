@@ -9,7 +9,7 @@ load("@rules_multi_tsc//:def.bzl", "tsc")
 
 tsc(
     name="tsc",
-    import_path="prism",
+    ts_path="prism",
     srcs=glob(["*.ts"]),
     deps=[
       "//02_dependent/basics:tsc",
