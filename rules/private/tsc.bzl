@@ -33,17 +33,19 @@ def _impl(ctx):
 
     ts_path = ctx.attr.ts_path
     if len(ts_path) == 0:
-        ts_path = ctx.label.package.split("/")[-1]
+        ts_path = ctx.label.package.split("/")[-1] # ts_path defaults to the package name
 
     tsc_out_dir = None
 
     if len(ctx.attr.srcs) == 0:
         fail("tsc rule error: srcs must have at least one item.")
 
+    # for each typescript source file,
+    #   - collect up path information, to pass to the tsconfig generator script
+    #   - collect up expected tsc outputs
     tsc_outputs = []
     ts_declaration_outputs = []
     js_and_sourcemap_outputs = []
-
     src_file_paths = []
     src_files = []
     for src in ctx.attr.srcs:
@@ -70,6 +72,11 @@ def _impl(ctx):
     if tsc_out_dir == None:
         fail("tsc rule error: must be compile at least one file")
 
+
+    # for each dependency:
+    #   - collect up all dependency files, and then make changes in these files trigger a tsc re-run
+    #   - add a tsconfig paths mapping entry for this tsc target
+    #   - add this ts_path to the cumulative paths mapping
     cumulative_js_result = CumulativeJsResult(
         ts_path_to_js_dir = {},
         js_and_sourcemap_files = []
@@ -91,12 +98,13 @@ def _impl(ctx):
 
         if CumulativeJsResult in dep:
             r = dep[CumulativeJsResult]
-
-            if r.ts_path_to_js_dir != None:
-                for p in r.ts_path_to_js_dir:
-                    cumulative_js_result.ts_path_to_js_dir[p] = r.ts_path_to_js_dir[p]
-
+            for p in r.ts_path_to_js_dir:
+                cumulative_js_result.ts_path_to_js_dir[p] = r.ts_path_to_js_dir[p]
             cumulative_js_result.js_and_sourcemap_files.extend(r.js_and_sourcemap_files)
+
+
+    # generate a tsconfig file tailored to this tsc library,
+    # and containing path mappings for tsc libraries that are dependencies of this target
 
     script_input_data_file = ctx.actions.declare_file("generate_tsconfig_input.json")
     ctx.actions.write(
@@ -130,6 +138,9 @@ def _impl(ctx):
             script_input_data_file,
         ]
     )
+
+
+    # execute tsc
 
     # You would think that with moduleResolution=node in tsconfig, that something like NODE_PATH
     # would be scanned my tsc. That's not the case, per
@@ -175,6 +186,10 @@ def _impl(ctx):
     if ts_path in ts_path_to_js_dir:
         fail("tsc rule error: ts_path '%s' apparently defined twice" % r.ts_path)
     ts_path_to_js_dir[ts_path] = tsc_out_dir
+
+    # The DefaultInfo result only contains files that should cause tsc libraries that
+    # depend on this library, to recompile. That means ts declaration files -
+    # and DOES NOT include js files.
 
     return [
         DefaultInfo(
