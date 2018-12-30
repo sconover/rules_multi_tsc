@@ -24,6 +24,6 @@ tsconfigJson["compilerOptions"]["declaration"] = true // force always generating
 tsconfigJson["compilerOptions"]["outDir"] = inputJson["out_dir"]
 tsconfigJson["compilerOptions"]["paths"] = inputJson["paths_mapping"]
 
-tsconfigJson["files"] = inputJson["srcs"].map(src => path.join(inputJson["package_relative_path"], src))
+tsconfigJson["files"] = inputJson["srcs"]
 
 process.stdout.write(JSON.stringify(tsconfigJson, null, "  "))

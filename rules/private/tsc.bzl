@@ -49,25 +49,25 @@ def _impl(ctx):
     src_file_paths = []
     src_files = []
     for src in ctx.attr.srcs:
-        f = src.files.to_list()[0]
-        src_file_paths.append(f.path.replace(source_root_dir + "/", "", 1))
-        src_files.append(f)
+        for src_f in src.files.to_list():
+            src_file_paths.append(src_f.path)
+            src_files.append(src_f)
 
-        basename_without_extension = f.basename.rsplit("." + f.extension, 1)[0]
-        declaration_out_file = ctx.actions.declare_file("%s.d.ts" % basename_without_extension)
-        js_out_file = ctx.actions.declare_file("%s.js" % basename_without_extension)
-        sourcemap_out_file = ctx.actions.declare_file("%s.js.map" % basename_without_extension)
+            basename_without_extension = src_f.basename.rsplit("." + src_f.extension, 1)[0]
+            declaration_out_file = ctx.actions.declare_file("%s.d.ts" % basename_without_extension)
+            js_out_file = ctx.actions.declare_file("%s.js" % basename_without_extension)
+            sourcemap_out_file = ctx.actions.declare_file("%s.js.map" % basename_without_extension)
 
-        bazel_out_root_dir = declaration_out_file.dirname.split(ctx.label.package)[0]
-        tsc_out_dir = bazel_out_root_dir + ctx.label.package
+            bazel_out_root_dir = declaration_out_file.dirname.split(ctx.label.package)[0]
+            tsc_out_dir = bazel_out_root_dir + ctx.label.package
 
-        ts_declaration_outputs.append(declaration_out_file)
-        js_and_sourcemap_outputs.append(js_out_file)
-        js_and_sourcemap_outputs.append(sourcemap_out_file)
+            ts_declaration_outputs.append(declaration_out_file)
+            js_and_sourcemap_outputs.append(js_out_file)
+            js_and_sourcemap_outputs.append(sourcemap_out_file)
 
-        tsc_outputs.append(declaration_out_file)
-        tsc_outputs.append(js_out_file)
-        tsc_outputs.append(sourcemap_out_file)
+            tsc_outputs.append(declaration_out_file)
+            tsc_outputs.append(js_out_file)
+            tsc_outputs.append(sourcemap_out_file)
 
     if tsc_out_dir == None:
         fail("tsc rule error: must be compile at least one file")
@@ -122,7 +122,7 @@ def _impl(ctx):
     ts_inputs = src_files + dependency_ts_declaration_files
 
     ctx.action(
-        command="%s %s %s > %s" % (
+        command="echo $(pwd);%s %s %s > %s" % (
             node_executable.path,
             generate_tsconfig_json_js_script.path,
             script_input_data_file.path,
