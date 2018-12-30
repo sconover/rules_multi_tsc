@@ -4,6 +4,7 @@ load(":rollup_js_result.bzl", "RollupJsResult")
 def _impl(ctx):
     node_executable = ctx.attr.node_executable.files.to_list()[0]
     rollup_script = ctx.attr.rollup_script.files.to_list()[0]
+    node_modules_path = rollup_script.path.split("/node_modules/")[0] + "/node_modules"
     entrypoint_js_content = ctx.attr.entrypoint_js_content # TODO: must specify if source or all type
     module_name = ctx.attr.module_name
     tsc_dep = ctx.attr.tsc_dep
@@ -99,7 +100,8 @@ export default {
         content=rollup_config_content)
 
     ctx.action(
-        command="echo $(pwd); %s %s -c %s" % (
+        command="ln -s %s node_modules;env NODE_PATH=node_modules %s %s -c %s" % (
+            node_modules_path,
             node_executable.path,
             rollup_script.path,
             rollup_config_file.path,

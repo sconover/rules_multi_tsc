@@ -79,7 +79,7 @@ export default {
         content=rollup_config_content)
 
     ctx.action(
-        command="ln -s %s node_modules;%s %s -c %s" % (
+        command="ln -s %s node_modules;env NODE_PATH=node_modules %s %s -c %s" % (
             node_modules_path,
             node_executable.path,
             rollup_script.path,
