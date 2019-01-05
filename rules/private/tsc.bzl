@@ -184,7 +184,7 @@ def _impl(ctx):
 
     ts_path_to_js_dir = cumulative_js_result.ts_path_to_js_dir
     if ts_path in ts_path_to_js_dir:
-        fail("tsc rule error: ts_path '%s' apparently defined twice" % r.ts_path)
+        fail("tsc rule error: ts_path '%s' apparently defined twice" % ts_path)
     ts_path_to_js_dir[ts_path] = tsc_out_dir
 
     # The DefaultInfo result only contains files that should cause tsc libraries that
