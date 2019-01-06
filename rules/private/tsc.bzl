@@ -106,7 +106,7 @@ def _impl(ctx):
     # generate a tsconfig file tailored to this tsc library,
     # and containing path mappings for tsc libraries that are dependencies of this target
 
-    script_input_data_file = ctx.actions.declare_file("generate_tsconfig_input.json")
+    script_input_data_file = ctx.actions.declare_file("%s_generate_tsconfig_input.json" % ctx.attr.name)
     ctx.actions.write(
         output=script_input_data_file,
         content=GenerateTsconfigInput(
@@ -117,7 +117,7 @@ def _impl(ctx):
             paths_mapping=paths_mapping,
         ).to_json())
 
-    generated_tsconfig_json_file = ctx.actions.declare_file("tsconfig.gen-initial.json")
+    generated_tsconfig_json_file = ctx.actions.declare_file("%s_tsconfig.gen-initial.json" % ctx.attr.name)
 
     ts_inputs = src_files + dependency_ts_declaration_files
 
@@ -153,11 +153,12 @@ def _impl(ctx):
 
     ctx.action(
         command=" && ".join([
-            "cp %s tsconfig.for-use.json" % generated_tsconfig_json_file.path,
+            "cp %s %s_tsconfig.for-use.json" % (generated_tsconfig_json_file.path, ctx.attr.name),
             "ln -sf %s node_modules" % node_modules_path,
-            "%s %s -p tsconfig.for-use.json" % (
+            "%s %s -p %s_tsconfig.for-use.json" % (
                 node_executable.path,
-                tsc_script.path
+                tsc_script.path,
+                ctx.attr.name
             ),
         ]),
         inputs=[generated_tsconfig_json_file] + ts_inputs,
@@ -172,7 +173,7 @@ def _impl(ctx):
     # The "additional" file is here so the action cache invalidates
     # when anything that is returned by this rule changes, or is important
     # re: the tsc run.
-    additional_file = ctx.actions.declare_file("additional_output_for_hashing")
+    additional_file = ctx.actions.declare_file("%s_additional_output_for_hashing" % ctx.attr.name)
     ctx.actions.write(
         output=additional_file,
         content="\n".join([
