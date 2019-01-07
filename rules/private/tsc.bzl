@@ -1,3 +1,5 @@
+load(":ts_results.bzl", "TsLibraryResult", "CumulativeJsResult")
+
 GenerateTsconfigInput = provider(
     fields = [
         "tsconfig_template_json_file",
@@ -5,21 +7,6 @@ GenerateTsconfigInput = provider(
         "out_dir",
         "package_relative_path",
         "paths_mapping",
-    ]
-)
-
-TscResult = provider(
-    fields = [
-        "ts_path",
-        "tsc_out_dir",
-        "ts_declaration_files",
-    ]
-)
-
-CumulativeJsResult = provider(
-    fields = [
-        "ts_path_to_js_dir",
-        "js_and_sourcemap_files",
     ]
 )
 
@@ -88,8 +75,8 @@ def _impl(ctx):
         for f in dep.files.to_list():
             deps_files.append(f)
 
-        if TscResult in dep:
-            r = dep[TscResult]
+        if TsLibraryResult in dep:
+            r = dep[TsLibraryResult]
             next_ts_path = r.ts_path + "/*"
             if next_ts_path in paths_mapping:
                 fail("tsc rule error: ts_path '%s' apparently defined twice" % r.ts_path)
@@ -101,7 +88,6 @@ def _impl(ctx):
             for p in r.ts_path_to_js_dir:
                 cumulative_js_result.ts_path_to_js_dir[p] = r.ts_path_to_js_dir[p]
             cumulative_js_result.js_and_sourcemap_files.extend(r.js_and_sourcemap_files)
-
 
     # generate a tsconfig file tailored to this tsc library,
     # and containing path mappings for tsc libraries that are dependencies of this target
@@ -200,7 +186,7 @@ def _impl(ctx):
                 dependency_ts_declaration_files
             ),
         ),
-        TscResult(
+        TsLibraryResult(
             ts_path=ts_path,
             tsc_out_dir=tsc_out_dir,
             ts_declaration_files=depset(ts_declaration_outputs), # note: dependency .d.ts's not propagated
