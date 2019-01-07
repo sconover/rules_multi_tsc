@@ -1,9 +1,6 @@
 load(":ts_results.bzl", "TsLibraryResult", "CumulativeJsResult")
 
 def _impl(ctx):
-    ts_path = ctx.attr.ts_path
-    tsc_out_dir = "/tmp"
-
     src_files = []
     for src in ctx.attr.srcs:
         for src_f in src.files.to_list():
@@ -14,7 +11,7 @@ def _impl(ctx):
             files=depset(src_files),
         ),
         TsLibraryResult(
-            ts_path=ts_path,
+            ts_path=ctx.attr.ts_path,
             tsc_out_dir=ctx.label.package,
             ts_declaration_files=depset(src_files),
         ),
