@@ -55,6 +55,7 @@ def _impl(ctx):
 const path = require('path');
 import alias from 'rollup-plugin-alias';
 import commonjs from 'rollup-plugin-commonjs';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
   input: '%s',
@@ -69,6 +70,7 @@ export default {
   },
   %s
   plugins: [
+    sourcemaps(),
     alias(
       %s
     ),

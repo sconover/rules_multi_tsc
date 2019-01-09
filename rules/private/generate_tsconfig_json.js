@@ -21,8 +21,11 @@ if (tsconfigJson["compilerOptions"] == null) {
 }
 
 tsconfigJson["compilerOptions"]["declaration"] = true // force always generating .d.ts files
+tsconfigJson["compilerOptions"]["sourceMap"] = true // force always generating sourcemaps
+tsconfigJson["compilerOptions"]["inlineSources"] = true // always include the original ts source in the sourcemap
 tsconfigJson["compilerOptions"]["outDir"] = inputJson["out_dir"]
 tsconfigJson["compilerOptions"]["paths"] = inputJson["paths_mapping"]
+
 
 tsconfigJson["files"] = inputJson["srcs"]
 

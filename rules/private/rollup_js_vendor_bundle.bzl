@@ -39,6 +39,7 @@ const path = require('path');
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import includePaths from 'rollup-plugin-includepaths';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
   input: '%s',
@@ -51,6 +52,7 @@ export default {
     intro: 'const global = window'
   },
   plugins: [
+    sourcemaps(),
     resolve({
       preferBuiltins: false,
     }),

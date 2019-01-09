@@ -4,7 +4,7 @@ Provides a single key rule, `tsc`, which allows a typescript project to be split
 
 In contrast to [rules_typescript](https://github.com/bazelbuild/rules_typescript), it depends on a few core bazel rules and has no other dependencies. You plug in your own nodejs executable, tsc implementation, and tsconfig.json.
 
-Comes with bonus rules for creating and minifying js bundles, from the results of tsc compilation.
+Comes with bonus rules for creating and minifying js bundles, from the results of tsc compilation. All sourcemaps contain original typescript source code.
 
 ## Installation
 

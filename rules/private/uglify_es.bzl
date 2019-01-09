@@ -9,20 +9,25 @@ def _impl(ctx):
     rollup_js_result = ctx.attr.rollup_dep[RollupJsResult]
 
     base_js_name = rollup_js_result.js_file.basename.rsplit(".js", 1)[0]
-    dest_file = ctx.actions.declare_file(base_js_name + ".min.js")
-    sourcemap_file = ctx.actions.declare_file(base_js_name + ".min.js.map")
+
+    minified_js_file = base_js_name + ".min.js"
+    dest_file = ctx.actions.declare_file(minified_js_file)
+
+    sourcemap_file_name = base_js_name + ".min.js.map"
+    sourcemap_file = ctx.actions.declare_file(sourcemap_file_name)
 
     ctx.action(
         command=" ".join([
-            "%s %s --compress --mangle",
+            "%s %s --compress --mangle --timings",
             "--output=%s",
-            "--source-map \"content='%s'\"",
+            "--source-map \"content='%s',url='%s'\"",
             "%s"
         ])  % (
             node_executable.path,
             uglify_script.path,
             dest_file.path,
             rollup_js_result.sourcemap_file.path,
+            sourcemap_file_name,
             rollup_js_result.js_file.path
         ),
         inputs=[rollup_js_result.js_file, rollup_js_result.sourcemap_file],
