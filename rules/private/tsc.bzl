@@ -108,7 +108,7 @@ def _impl(ctx):
     ts_inputs = src_files + dependency_ts_declaration_files
 
     ctx.action(
-        command="echo $(pwd);%s %s %s > %s" % (
+        command="%s %s %s > %s" % (
             node_executable.path,
             generate_tsconfig_json_js_script.path,
             script_input_data_file.path,
