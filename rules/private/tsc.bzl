@@ -180,11 +180,10 @@ def _impl(ctx):
 
     return [
         DefaultInfo(
-            files=depset(
-                [additional_file, generated_tsconfig_json_file] +
-                ts_declaration_outputs +
-                dependency_ts_declaration_files
-            ),
+            files=depset([additional_file, generated_tsconfig_json_file] + \
+                ts_declaration_outputs + \
+                dependency_ts_declaration_files),
+            runfiles=ctx.runfiles(files=ts_declaration_outputs)
         ),
         TsLibraryResult(
             ts_path=ts_path,
