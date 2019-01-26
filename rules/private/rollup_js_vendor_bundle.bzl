@@ -40,6 +40,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import includePaths from 'rollup-plugin-includepaths';
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import replace from 'rollup-plugin-replace'
 
 export default {
   input: '%s',
@@ -56,7 +57,10 @@ export default {
     resolve({
       preferBuiltins: false,
     }),
-    commonjs()
+    commonjs(),
+    replace({
+        "process.env.NODE_ENV": JSON.stringify( "production" )
+    })
   ],
   onwarn(warning) {
     if (['UNRESOLVED_IMPORT', 'MISSING_GLOBAL_NAME'].indexOf(warning.code)>=0) {

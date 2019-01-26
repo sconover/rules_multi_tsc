@@ -34,6 +34,7 @@ filegroup(
         "node_modules/rollup-plugin-node-resolve/**/*",
         "node_modules/rollup-plugin-alias/**/*",
         "node_modules/rollup-plugin-includepaths/**/*",
+        "node_modules/rollup-plugin-replace/**/*",
     ]),
     visibility = ["//visibility:public"],
 )
