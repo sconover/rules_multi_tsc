@@ -16,7 +16,7 @@ def _impl(ctx):
     sourcemap_file_name = base_js_name + ".min.js.map"
     sourcemap_file = ctx.actions.declare_file(sourcemap_file_name)
 
-    ctx.action(
+    ctx.actions.run_shell(
         command=" ".join([
             "%s %s --compress --mangle --timings",
             "--output=%s",

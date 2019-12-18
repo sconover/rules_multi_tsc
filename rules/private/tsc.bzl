@@ -1,4 +1,9 @@
-load(":ts_results.bzl", "TsLibraryResult", "CumulativeJsResult")
+load(":ts_results.bzl",
+    _TsLibraryResult = "TsLibraryResult",
+    _CumulativeJsResult = "CumulativeJsResult")
+
+TsLibraryResult = _TsLibraryResult
+CumulativeJsResult = _CumulativeJsResult
 
 GenerateTsconfigInput = provider(
     fields = [
@@ -107,7 +112,7 @@ def _impl(ctx):
 
     ts_inputs = src_files + dependency_ts_declaration_files
 
-    ctx.action(
+    ctx.actions.run_shell(
         command="%s %s %s > %s" % (
             node_executable.path,
             generate_tsconfig_json_js_script.path,
@@ -137,7 +142,7 @@ def _impl(ctx):
     # So the strategy below is to just symlink to the node_modules sitting under external/ ,
     # in a tsc-friendly location.
 
-    ctx.action(
+    ctx.actions.run_shell(
         command=" && ".join([
             "cp %s %s_tsconfig.for-use.json" % (generated_tsconfig_json_file.path, ctx.attr.name),
             "ln -sf %s node_modules" % node_modules_path,
@@ -208,6 +213,6 @@ tsc = rule(
       "tsc_script": attr.label(allow_files=True, mandatory=True),
       "tsconfig_json": attr.label(allow_files=True, mandatory=True),
 
-      "_generate_tsconfig_json_js": attr.label(default=Label("//private:generate_tsconfig_json.js"), allow_files=True, single_file=True),
+      "_generate_tsconfig_json_js": attr.label(default=Label("//private:generate_tsconfig_json.js"), allow_single_file=True),
     }
 )
